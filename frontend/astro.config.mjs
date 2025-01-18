@@ -9,5 +9,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), svelte(), tailwind()]
+  integrations: [react(), svelte(), tailwind({
+    applyBaseStyles: false,
+  }),]
 });
