@@ -10,6 +10,5 @@ audio_file = f"audio_files/{audio_file}.wav"
 res = model.recognize(audio_file)
 print(res)
 
-
 # with open('test.txt', 'w', encoding='utf-8') as output_file:
 #     output_file.write(res)
