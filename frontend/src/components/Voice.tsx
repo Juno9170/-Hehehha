@@ -45,6 +45,7 @@ export const AudioRecorderWithVisualizer = ({
 }: Props) => {
   // States
   const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [isRecordingFinished, setIsRecordingFinished] =
     useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
@@ -292,7 +293,7 @@ export const AudioRecorderWithVisualizer = ({
           !isRecording ? "hidden" : "flex"
         }`}
       />
-      <div className="flex gap-8">
+      <div className="flex gap-5">
         {/* ========== Delete recording button ========== */}
         {isRecording ? (
           <Tooltip>
@@ -305,7 +306,7 @@ export const AudioRecorderWithVisualizer = ({
                 <Trash size={15} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={-8}>
+            <TooltipContent side="bottom" sideOffset={3}>
               <span> Reset recording</span>
             </TooltipContent>
           </Tooltip>
@@ -315,16 +316,21 @@ export const AudioRecorderWithVisualizer = ({
         <Tooltip>
           <TooltipTrigger asChild>
             {!isRecording ? (
-              <Button onClick={() => startRecording()} size={"icon"} className="bg-[#E8B4BC] hover:bg-[#D282A6]">
-                <Mic size={15} />
-              </Button>
+                <div className="flex flex-col items-center gap-4 font-semibold text-xl">
+                    <div className={`${isReady ? "block" : "invisible"}`}>
+                        Start Recording
+                    </div>
+                    <Button onClick={() => startRecording()} size={"icon"} className="bg-[#F5E3E0] hover:bg-[#D282A6] active:bg-[#c76c95] rounded-xl">
+                        <Mic size={15} /> 
+                    </Button>
+                </div>
             ) : (
               <Button onClick={handleSubmit} size={"icon"}>
                 <Download size={15} />
               </Button>
             )}
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="m-2" sideOffset={-8}>
+          <TooltipContent side="bottom" className="m-2" sideOffset={-3}>
             <span>
               {" "}
               {!isRecording ? "Start recording" : "Download recording"}{" "}
