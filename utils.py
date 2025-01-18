@@ -15,6 +15,3 @@ def levenshtein_distance(a, b):
         levenshtein_distance(a[1:], b[1:])
     )
     return 1 + res
-
-
-print(levenshtein_distance("kitten", "sitting"))
