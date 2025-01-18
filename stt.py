@@ -1,6 +1,7 @@
 import os
 from groq import Groq
 from dotenv import load_dotenv
+import eng_to_ipa as ipa
 
 load_dotenv()
 
@@ -21,7 +22,9 @@ with open(filepath, "rb") as file:
         response_format="json",
         temperature=0.0
     )
-    print(transcription)
-    print(transcription.text.strip())
+
+    text = transcription.text.strip()
+
+    print(ipa.convert(text))
 
 # can we use STT on the user's input to get the timestamps we need to split the audio at?

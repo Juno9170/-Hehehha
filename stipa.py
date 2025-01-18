@@ -3,7 +3,7 @@ from allosaurus.app import read_recognizer
 model = read_recognizer()
 # model = read_recognizer("eng2102")
 
-audio_file = "cat_ryan"
+audio_file = "quickbrownfox"
 audio_file = f"audio_files/{audio_file}.wav"
 
 res = model.recognize(audio_file, topk=5, timestamp=True)
