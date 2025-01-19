@@ -9,9 +9,9 @@ from flask import Flask, request, jsonify
 import deepl
 from flask_cors import CORS
 from io import BytesIO
-from stt import Lango
 from openai import OpenAI
-from word import Word
+
+from stt import Lango
 
 load_dotenv()
 translator = deepl.Translator(os.getenv("DEEPL_API_KEY"))

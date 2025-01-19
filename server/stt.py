@@ -1,11 +1,9 @@
 import whisper_timestamped as whisper
-# from groq import Groq
-import eng_to_ipa as ipa
 from allosaurus.app import read_recognizer
 from pydub import AudioSegment
 
-from server.objects.phoneme import Phoneme
-from server.objects.word import Word
+from objects.phoneme import Phoneme
+from objects.word import Word
 
 class Lango:
     def __init__(self, whisper_model, allosaurus_model):
