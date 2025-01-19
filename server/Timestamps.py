@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = OpenAI(
-    api_key=os.getenv("API_KEY"),
+    api_key=os.getenv("OPENAPI_API_KEY"),
 )
+
 
 def speechTimestamps(filepath):
     """
@@ -30,6 +31,7 @@ def speechTimestamps(filepath):
 
     # Return transcription's word-level timestamps as JSON
     return transcription.words
+
 
 # Example usage
 if __name__ == "__main__":
