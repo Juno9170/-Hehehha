@@ -4,6 +4,7 @@ from pydub import AudioSegment
 
 from objects.phoneme import Phoneme
 from objects.word import Word
+from utils import utils
 
 
 class Lango:
@@ -111,28 +112,47 @@ class Lango:
             out.append((w, mapped_phonemes))
 
         return out
-
+    
+    @staticmethod
+    def compare(s, target):
+        s_copy = str(s)
+        target_copy = str(target)
+        ops = utils.levenshtein_operations(s, target)
+        print(ops)
+        for op in ops:
+            if op['operation'] == 'ins':
+                s_copy = s_copy[:op['position']-1] + ' ' + s_copy[op['position']-1:]
+            elif op['operation'] == 'del':
+                target_copy = target_copy[:op['position']-1] + ' ' + target_copy[op['position']-1:]
+                
+        return (s_copy, target_copy)
 
 if __name__ == "__main__":
+    
+    s = "pon"
+    target = "poan"
+    
+    res = Lango.compare(s, target)
+    print(res)
 
-    whisper_model = whisper.load_model("tiny", device="cpu")
-    allosaurus_model = read_recognizer("eng2102")
+    # whisper_model = whisper.load_model("tiny", device="cpu")
+    # allosaurus_model = read_recognizer("eng2102")
 
-    lango = Lango(whisper_model, allosaurus_model)
+    # lango = Lango(whisper_model, allosaurus_model)
 
-    audio_file = "testingNOW.wav"
-    # audio_file = "test_audio_files/quickbrownfox.wav"
-    # audio_file = f"audio_files/{audio_file}.wav"
+    # audio_file = "testingNOW.wav"
+    # # audio_file = "test_audio_files/quickbrownfox.wav"
+    # # audio_file = f"audio_files/{audio_file}.wav"
 
-    # res, word_phoneme_map = lango.get_results(audio_file)
+    # # res, word_phoneme_map = lango.get_results(audio_file)
 
-    phonemes = lango.audio_to_phonemes(audio_file)
-    words = lango.timestamp_transcription(audio_file)
-    res = lango.map_phonemes_to_words(words, phonemes)
+    # phonemes = lango.audio_to_phonemes(audio_file)
+    # words = lango.timestamp_transcription(audio_file)
+    # res = lango.map_phonemes_to_words(words, phonemes)
 
-    print(' '.join([w.text for w, ps in res]))
+    # print(' '.join([w.text for w, ps in res]))
 
-    print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+    # print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
 
-    for w, ps in res:
-        print(w)
+    # for w, ps in res:
+    #     print(w)

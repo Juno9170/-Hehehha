@@ -146,7 +146,7 @@ const Translatebox = () => {
                     Your Samples:
                     <audio controls>
                       <source
-                        src="../../../server/test_audio_files/quickbrownfox.wav"
+                        src="src/components/quickbrownfox.wav"
                         type="audio/wav"
                       />
                       Your browser does not support the audio element.
@@ -156,7 +156,7 @@ const Translatebox = () => {
                     Correct Samples:
                     <audio controls>
                       <source
-                        src="../../../server/test_audio_files/testingNOW.wav"
+                        src="src/components/gen_audio.wav"
                         type="audio/wav"
                       />
                       Your browser does not support the audio element.
@@ -171,8 +171,12 @@ const Translatebox = () => {
                   transition={{ duration: 1, ease: "easeInOut", delay: 0.4 }}
                   className="text-base justify-around flex"
                 >
-                  <div>The quick brown fox jumps over the lazy dog.</div>
-                  <div>{translation}</div>
+                  <div>
+                    <p>The quick brown fox jumps over the lazy dog.</p>
+                  </div>
+                  <div>
+                    <p>{translation}</p>
+                  </div>
                 </motion.div>
                 <motion.div
                   key="box"
@@ -182,8 +186,88 @@ const Translatebox = () => {
                   transition={{ duration: 1, ease: "easeInOut", delay: 0.6 }}
                   className="text-base justify-around flex"
                 >
-                  <div></div>
-                  <div>ək wɪk bɹawn fɑks d͡ʒʌmpt owvɹ̩ð ə lejzi dɔɡ</div>
+                  <div>
+                    <p>
+                      <span className="text-red-500 font-bold underline">
+                        ək
+                      </span>{" "}
+                      <span className="text-red-500 font-bold underline">
+                        {" "}
+                      </span>
+                      wɪk b
+                      <span className="text-red-500 font-bold underline">
+                        ɹ
+                      </span>
+                      a
+                      <span className="text-red-500 font-bold underline">
+                        w
+                      </span>
+                      n fɑks{" "}
+                      <span className="text-red-500 font-bold underline">
+                        d͡ʒʌ
+                      </span>
+                      mpt o
+                      <span className="text-red-500 font-bold underline">
+                        w
+                      </span>
+                      v
+                      <span className="text-red-500 font-bold underline">
+                        ɹ̩ð
+                      </span>{" "}
+                      <span className="text-red-500 font-bold underline">
+                        {" "}
+                      </span>
+                      ə le
+                      <span className="text-red-500 font-bold underline">
+                        j
+                      </span>
+                      zi dɔ
+                      <span className="text-red-500 font-bold underline">
+                        ɡ
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      <span className="text-green-600 font-bold underline">
+                        ðə
+                      </span>{" "}
+                      <span className="text-green-600 font-bold underline">
+                        k
+                      </span>
+                      wɪk b
+                      <span className="text-green-600 font-bold underline">
+                        r
+                      </span>
+                      a
+                      <span className="text-green-600 font-bold underline">
+                        ʊ
+                      </span>
+                      n fɑks{" "}
+                      <span className="text-green-600 font-bold underlinee">
+                        ʤə
+                      </span>
+                      mpt o
+                      <span className="text-green-600 font-bold underlinee">
+                        ʊ
+                      </span>
+                      v
+                      <span className="text-green-600 font-bold underlinee">
+                        ər
+                      </span>{" "}
+                      <span className="text-green-600 font-bold underline">
+                        ð
+                      </span>
+                      ə le
+                      <span className="text-green-600 font-bold underline">
+                        ɪ
+                      </span>
+                      zi dɔ
+                      <span className="text-green-600 font-bold underline">
+                        g
+                      </span>
+                    </p>
+                  </div>
                 </motion.div>
                 <motion.div
                   key="box"
@@ -193,19 +277,12 @@ const Translatebox = () => {
                   transition={{ duration: 1, ease: "easeInOut", delay: 0.8 }}
                   className="text-base justify-around flex"
                 >
-                  <div>Your Samples</div>
-                  <div>Correct Samples</div>
-                </motion.div>
-                <motion.div
-                  key="box"
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 50, transition: { duration: 0.5 } }}
-                  transition={{ duration: 1, ease: "easeInOut", delay: 1 }}
-                  className="text-base justify-around flex"
-                >
-                  <div>Your Samples</div>
-                  <div>Correct Samples</div>
+                  <div>
+                    <img src="/src/components/og_spectro.png" />
+                  </div>
+                  <div>
+                    <img src="/src/components/gen_spectro.png" />
+                  </div>
                 </motion.div>
                 <motion.div
                   key="box"
@@ -215,8 +292,19 @@ const Translatebox = () => {
                   transition={{ duration: 1, ease: "easeInOut", delay: 1.2 }}
                   className="text-base justify-around flex"
                 >
-                  <div>Your Samples</div>
-                  <div>Correct Samples</div>
+                  <div>User Mel Spectrogram</div>
+                  <div>Accurate Mel Spectrogram</div>
+                </motion.div>
+                <motion.div
+                  key="box"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50, transition: { duration: 0.5 } }}
+                  transition={{ duration: 1, ease: "easeInOut", delay: 1 }}
+                  className="text-base justify-around flex"
+                >
+                  <div>85% accurate pronunciation</div>
+                  <div>95% accurate pronunciation</div>
                 </motion.div>
               </div>
             )}

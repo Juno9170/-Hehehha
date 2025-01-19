@@ -31,7 +31,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:4321")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.route('/', methods=['GET'])
@@ -65,15 +65,6 @@ def translateText():
 def serve_audio(filename):
     return send_from_directory("static/audio", filename)
 
-@socketio.on("translated_text")
-def handle_translated_text(data):
-    print("Received translated text")
-    print(data)
-    phonemes = ipa.convert(data)
-    synthesize_audio(data, "gen_audio.wav")
-
-    emit("translated_text", data, broadcast=True)
-
 
 @socketio.on("audio_data")
 def handle_audio(data):
@@ -104,15 +95,21 @@ def handle_audio(data):
         print(words)
         res = lango.map_phonemes_to_words(words, phonemes)
 
-        print(' '.join([w.text for w, ps in res]))
-        print(' '.join([ipa.convert(w.text) for w, _ in res]))
-        print(' '.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
-
-        diffs = [utils.levenshtein_operations(
-            ''.join([p.phoneme for p in ps]), ipa.convert(w.text)) for w, ps in res]
-
+        # print(' '.join([w.text for w, ps in res]))
+        # print(' '.join([ipa.convert(w.text) for w, _ in res]))
+        # print(' '.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+        
+        diffs = []
+        for w, ps in res:
+            target = ipa.convert(w)
+            s = ''.join([p.phoneme for p in ps])
+            diff = Lango.compare(s, target)
+            diffs.append(diff)
+            
         for d in diffs:
             print(d)
+
+        return
 
         for w, ps in res:
             print(w)
@@ -149,7 +146,7 @@ def synthesize_audio(text, audio_filename):
         input=text,
     )
 
-    audio_url = os.path.join("static", "audio", audio_filename)
+    audio_url = os.path.join(audio_filename)
     audio.stream_to_file(audio_url)
     print(type(audio), audio)
 
@@ -167,4 +164,5 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
+    synthesize_audio("the quick brown fox jumps over the lazy dog", "gen_audio.wav")
     app.run(debug=True, host='0.0.0.0', port=5050)
