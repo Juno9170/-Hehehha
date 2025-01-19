@@ -3,8 +3,6 @@ import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
 import TranslateBox from "../components/Translatebox";
-import VoiceProvider from "../components/VoiceProvider";
-import { Button } from "@/components/ui/button";
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
@@ -14,7 +12,4 @@ import { Button } from "@/components/ui/button";
     Lango
   </div>
   <TranslateBox client:load />
-  <div class="flex justify-center pt-20">
-    <VoiceProvider client:only="react" />
-  </div>
 </Layout>

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   className?: string;
   timerClassName?: string;
+  onFinish: () => void;
 };
 
 type Record = {
@@ -42,6 +43,7 @@ const downloadBlob = (blob: Blob) => {
 export const AudioRecorderWithVisualizer = ({
   className,
   timerClassName,
+  onFinish,
 }: Props) => {
   // States
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -54,24 +56,7 @@ export const AudioRecorderWithVisualizer = ({
     name: "",
     file: null,
   });
-  // Calculate the hours, minutes, and seconds from the timer
-  const hours = Math.floor(timer / 3600);
-  const minutes = Math.floor((timer % 3600) / 60);
-  const seconds = timer % 60;
 
-  // Split the hours, minutes, and seconds into individual digits
-  const [hourLeft, hourRight] = useMemo(
-    () => padWithLeadingZeros(hours, 2).split(""),
-    [hours]
-  );
-  const [minuteLeft, minuteRight] = useMemo(
-    () => padWithLeadingZeros(minutes, 2).split(""),
-    [minutes]
-  );
-  const [secondLeft, secondRight] = useMemo(
-    () => padWithLeadingZeros(seconds, 2).split(""),
-    [seconds]
-  );
   // Refs
   const mediaRecorderRef = useRef<{
     stream: MediaStream | null;
