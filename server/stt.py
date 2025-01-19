@@ -75,11 +75,13 @@ class Lango:
         ipa_transcription = self.allosaurus_model.recognize(
             audio_file, timestamp=True)
 
+        print("ipa_transcription:", ipa_transcription.split("\n"))
+
         for t in ipa_transcription.split("\n"):
-            print("ipa:", repr(t))
-            if len(t) != 3:  # Ensure the line has exactly 3 parts
-                print(f"Skipping invalid line...")  # Optional debug statement
-                continue
+            # print("ipa:", repr(t))
+            # if len(t) != 3:  # Ensure the line has exactly 3 parts
+            #     print(f"Skipping invalid line...")  # Optional debug statement
+            #     continue
             start, duration, phoneme = t.split(" ")
             start = float(start)
             duration = float(duration)
@@ -118,7 +120,8 @@ if __name__ == "__main__":
 
     lango = Lango(whisper_model, allosaurus_model)
 
-    audio_file = "test_audio_files/quickbrownfox.wav"
+    audio_file = "testingNOW.wav"
+    # audio_file = "test_audio_files/quickbrownfox.wav"
     # audio_file = f"audio_files/{audio_file}.wav"
 
     # res, word_phoneme_map = lango.get_results(audio_file)
