@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -15,12 +15,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import "../styles/global.css";
 import VoiceProvider from "./VoiceProvider";
 import Bird from '../../public/bird.png'
+import { io } from "socket.io-client";
+
 const Translatebox = () => {
   const [language, setLanguage] = React.useState("en-us");
   const [progress, setProgress] = React.useState(0);
   const [prompt, setPrompt] = React.useState("");
   const [translation, setTranslation] = React.useState("");
   const [isEditing, setIsEditing] = useState(false); // State to toggle between view and edit mode
+
+  const [genText, setGenText] = useState("");
+  const [genPhonemes, setGenPhonemes] = useState("");
+
+  useEffect(() => {
+    // Connect to the Socket.IO server
+    const socket = io("http://localhost:5050");
+
+    // Listen for "audio_processed" event
+    socket.on("audio_processed", (data) => {
+      setGenText(data.gen_text);
+      setGenPhonemes(data.gen_phonemes);
+    });
+
+    // Cleanup the socket connection on component unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const handleSubmit = async () => {
     const response = await fetch("http://localhost:5050/translate", {
@@ -94,8 +115,8 @@ const Translatebox = () => {
                     className="text-3xl font-medium text-center justify-around flex"
                     
                   >
-                    <div>Your Samples</div>
-                    <div>Correct Samples</div>
+                    <div>Your Samples: {genText}</div>
+                    <div>Correct Samples: {translation}</div>
                   </motion.div>
                   <motion.div
                     key="box"
@@ -106,8 +127,8 @@ const Translatebox = () => {
                     className="text-base justify-around flex"
                     
                   >
-                    <div>Your Samples</div>
-                    <div>Correct Samples</div>
+                    <div>Your Samples: {genPhonemes}</div>
+                    <div>Correct Samples: {}</div>
                   </motion.div>
                   <motion.div
                     key="box"
@@ -257,7 +278,7 @@ const Translatebox = () => {
                     autoFocus
                   />
                 ) : (
-                  <span className="text-2xl">{translation}</span>
+                  <span className="text-2xl max-w-[300px] text-center">{translation}</span>
                 )}
                 <div className="absolute right-0">
                   <Button
