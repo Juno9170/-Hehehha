@@ -16,6 +16,7 @@ import subprocess
 from stt import Lango
 from pydub import AudioSegment
 from time import sleep
+import eng_to_ipa as ipa
 
 
 load_dotenv()
@@ -28,7 +29,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:4321")
 
 
 @app.route('/', methods=['GET'])
@@ -62,6 +63,15 @@ def translateText():
 def serve_audio(filename):
     return send_from_directory("static/audio", filename)
 
+@socketio.on("translated_text")
+def handle_translated_text(data):
+    print("Received translated text")
+    print(data)
+    phonemes = ipa.convert(data)
+    synthesize_audio(data, "gen_audio.wav")
+
+    emit("translated_text", data, broadcast=True)
+
 
 @socketio.on("audio_data")
 def handle_audio(data):
@@ -91,6 +101,10 @@ def handle_audio(data):
 
         for w, ps in res:
             print(w)
+
+        gen_text = ' '.join([w.text for w, ps in res])
+        gen_phoneme = ' '.join([''.join([p.phoneme for p in ps]) for w, ps in res])
+        emit("audio_processed", {"text": gen_text, "phoneme": gen_phoneme})
     except Exception as e:
         print("An error occurred: ", str(e))
 

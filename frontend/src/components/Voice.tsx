@@ -11,13 +11,16 @@ import { Button } from "./ui/button";
 import { Trash, Mic, Download, Wand } from "lucide-react";
 type AudioRecorderWithVisualizerProps = {
   onFinish?: () => void;
-  titleString:string;
+  titleString: string;
 };
 
 const host = "http://localhost:5050/";
 const socket: Socket = io(host);
 
-export default function AudioRecorderWithVisualizer({ onFinish, titleString }: AudioRecorderWithVisualizerProps) {
+export default function AudioRecorderWithVisualizer({
+  onFinish,
+  titleString,
+}: AudioRecorderWithVisualizerProps) {
   const recorderControls = useAudioRecorder();
 
   const [audioUrl, setAudioUrl] = useState<string>("");
@@ -67,11 +70,17 @@ export default function AudioRecorderWithVisualizer({ onFinish, titleString }: A
 
   useEffect(() => {
     if (recorderControls.recordingBlob && !cancelled.current) {
-      console.log("Sending audio blob to the server", recorderControls.recordingBlob);
+      console.log(
+        "Sending audio blob to the server",
+        recorderControls.recordingBlob
+      );
       const reader = new FileReader();
       reader.onload = function (event) {
         const arrayBuffer = event.target?.result as ArrayBuffer;
-        socket.emit("audio_data", {arrayBuffer, additionalString:titleString} );
+        socket.emit("audio_data", {
+          arrayBuffer,
+          additionalString: titleString,
+        });
       };
 
       reader.readAsArrayBuffer(recorderControls.recordingBlob);
@@ -100,7 +109,11 @@ export default function AudioRecorderWithVisualizer({ onFinish, titleString }: A
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={()=>{cancelled.current = true; setIsReady(true); handleStopRecording()}}
+                onClick={() => {
+                  cancelled.current = true;
+                  setIsReady(true);
+                  handleStopRecording();
+                }}
                 size={"icon"}
                 variant={"default"}
                 className="mt-5 bg-[#D282A6] hover:bg-[#c76c95] rounded-xl"
@@ -118,16 +131,31 @@ export default function AudioRecorderWithVisualizer({ onFinish, titleString }: A
         <Tooltip>
           <TooltipTrigger asChild>
             {!recorderControls.isRecording ? (
-                <div className="flex flex-col items-center gap-4 font-semibold text-xl">
-                    <div className={`${isReady ? "block" : "invisible"}`}>
-                        Start Recording
-                    </div>
-                    <Button onClick={() => {recorderControls.startRecording(); setIsReady(false)}} size={"icon"} className="bg-[#F5E3E0] hover:bg-[#D282A6] active:bg-[#c76c95] rounded-xl">
-                        <Mic size={15} /> 
-                    </Button>
+              <div className="flex flex-col items-center gap-4 font-semibold text-xl">
+                <div className={`${isReady ? "block" : "invisible"}`}>
+                  Start Recording
                 </div>
+                <Button
+                  onClick={() => {
+                    recorderControls.startRecording();
+                    setIsReady(false);
+                  }}
+                  size={"icon"}
+                  className="bg-[#F5E3E0] hover:bg-[#D282A6] active:bg-[#c76c95] rounded-xl"
+                >
+                  <Mic size={15} />
+                </Button>
+              </div>
             ) : (
-              <Button onClick={() => {cancelled.current = false; handleStopRecording(); setIsReady(true) } } size={"icon"} className="mt-5 bg-[#F5E3E0] hover:bg-[#ffbc9f] rounded-xl">
+              <Button
+                onClick={() => {
+                  cancelled.current = false;
+                  handleStopRecording();
+                  setIsReady(true);
+                }}
+                size={"icon"}
+                className="mt-5 bg-[#F5E3E0] hover:bg-[#ffbc9f] rounded-xl"
+              >
                 <Wand size={15} />
               </Button>
             )}
@@ -135,7 +163,9 @@ export default function AudioRecorderWithVisualizer({ onFinish, titleString }: A
           <TooltipContent side="bottom" className="m-2" sideOffset={-3}>
             <span>
               {" "}
-              {!recorderControls.isRecording ? "Start recording" : "Analyse"}{" "}
+              {!recorderControls.isRecording
+                ? "Start recording"
+                : "Analyse"}{" "}
             </span>
           </TooltipContent>
         </Tooltip>
