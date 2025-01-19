@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit
 from flask import send_from_directory
 import os
 import whisper_timestamped as whisper
+import base64
 from allosaurus.app import read_recognizer
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -10,8 +11,12 @@ import deepl
 from flask_cors import CORS
 from io import BytesIO
 from openai import OpenAI
-
+import wave
+import subprocess
 from stt import Lango
+from pydub import AudioSegment
+from time import sleep
+
 
 load_dotenv()
 translator = deepl.Translator(os.getenv("DEEPL_API_KEY"))
@@ -62,29 +67,30 @@ def serve_audio(filename):
 def handle_audio(data):
     # audio_file = data["audio"]
     try:
-        print(type(data))
-        # Wrap the file content in a BytesIO object
-        audio_bytes_io = BytesIO(data)
-        print(type(audio_bytes_io))
-
-        # Prepare the tuple (filename, file-like object, content_type)
+        audio_bytes_io = BytesIO(data['arrayBuffer'])
         file_tuple = ("audio.wav", audio_bytes_io, "audio/wav")
+        #
+        # with open("testing.webm", "wb") as f:
+        #    f.write(audio_bytes_io.getvalue())
+        webm_audio = AudioSegment.from_file(
+            BytesIO(audio_bytes_io.getvalue()), format="webm")
+        wav_io = BytesIO()
+        webm_audio.export(wav_io, format="wav")
+        wav_bitstring = wav_io.getvalue()
 
-        # Pass the tuple to the transcription API
-        transcription = client.audio.transcriptions.create(
-            model="whisper-1", file=file_tuple, response_format="verbose_json",
-        )
+        output_file = 'testingNOW.wav'
+        with open(output_file, 'wb') as file:
+            file.write(wav_bitstring)
+        phonemes = lango.audio_to_phonemes(output_file)
+        words = lango.timestamp_transcription(output_file)
+        res = lango.map_phonemes_to_words(words, phonemes)
 
-        print(f"Text: {transcription.text}")
-        emit("transcription", {"text": transcription.text})
+        print(' '.join([w.text for w, ps in res]))
 
-        response = get_response(transcription.text)
-        emit("response", {"text": response})
+        print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
 
-        audio_filename = datetime.now().strftime("%Y%m%d_%H%M%S") + ".wav"
-        audio_url = synthesize_audio(response, audio_filename)
-        emit("audio_url", {"url": audio_url})
-
+        for w, ps in res:
+            print(w)
     except Exception as e:
         print("An error occurred: ", str(e))
 

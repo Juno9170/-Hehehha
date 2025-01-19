@@ -11,12 +11,13 @@ import { Button } from "./ui/button";
 import { Trash, Mic, Download, Wand } from "lucide-react";
 type AudioRecorderWithVisualizerProps = {
   onFinish?: () => void;
+  titleString:string;
 };
 
 const host = "http://localhost:5050/";
 const socket: Socket = io(host);
 
-export default function AudioRecorderWithVisualizer({ onFinish }: AudioRecorderWithVisualizerProps) {
+export default function AudioRecorderWithVisualizer({ onFinish, titleString }: AudioRecorderWithVisualizerProps) {
   const recorderControls = useAudioRecorder();
 
   const [audioUrl, setAudioUrl] = useState<string>("");
@@ -70,7 +71,7 @@ export default function AudioRecorderWithVisualizer({ onFinish }: AudioRecorderW
       const reader = new FileReader();
       reader.onload = function (event) {
         const arrayBuffer = event.target?.result as ArrayBuffer;
-        socket.emit("audio_data", arrayBuffer);
+        socket.emit("audio_data", {arrayBuffer, additionalString:titleString} );
       };
 
       reader.readAsArrayBuffer(recorderControls.recordingBlob);
@@ -83,7 +84,7 @@ export default function AudioRecorderWithVisualizer({ onFinish }: AudioRecorderW
   }, [recorderControls.recordingBlob, onFinish]);
 
   return (
-    <div className="*:bg-transparent">
+    <div className=" flex flex-col items-center ">
       <AudioRecorder
         onRecordingComplete={(blob) => handleStopRecording()}
         recorderControls={recorderControls}
@@ -99,7 +100,7 @@ export default function AudioRecorderWithVisualizer({ onFinish }: AudioRecorderW
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={()=>{cancelled.current = true; handleStopRecording()}}
+                onClick={()=>{cancelled.current = true; setIsReady(true); handleStopRecording()}}
                 size={"icon"}
                 variant={"default"}
                 className="mt-5 bg-[#D282A6] hover:bg-[#c76c95] rounded-xl"

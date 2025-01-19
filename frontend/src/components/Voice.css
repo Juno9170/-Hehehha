@@ -12,6 +12,9 @@
 .audio-recorder-options{
   display: none;
 }
+.audio-recorder{
+  margin-top: 40px;
+}
   @media (prefers-reduced-motion: no-preference) {
     .App-logo {
       animation: App-logo-spin infinite 20s linear;

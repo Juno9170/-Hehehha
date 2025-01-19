@@ -5,6 +5,7 @@ from pydub import AudioSegment
 from objects.phoneme import Phoneme
 from objects.word import Word
 
+
 class Lango:
     def __init__(self, whisper_model, allosaurus_model):
         self.whisper_model = whisper_model
@@ -17,7 +18,8 @@ class Lango:
         word_phoneme_map = self.map_phonemes_to_words(words, phonemes)
 
         print(' '.join([w.text for w, ps in word_phoneme_map]))
-        print(''.join([''.join([p.phoneme for p in ps]) for w, ps in word_phoneme_map]))
+        print(''.join([''.join([p.phoneme for p in ps])
+              for w, ps in word_phoneme_map]))
         for w, ps in res:
             print(w)
 
@@ -74,6 +76,10 @@ class Lango:
             audio_file, timestamp=True)
 
         for t in ipa_transcription.split("\n"):
+            print("ipa:", repr(t))
+            if len(t) != 3:  # Ensure the line has exactly 3 parts
+                print(f"Skipping invalid line...")  # Optional debug statement
+                continue
             start, duration, phoneme = t.split(" ")
             start = float(start)
             duration = float(duration)
@@ -103,8 +109,8 @@ class Lango:
             out.append((w, mapped_phonemes))
 
         return out
-    
-    
+
+
 if __name__ == "__main__":
 
     whisper_model = whisper.load_model("tiny", device="cpu")
@@ -112,18 +118,18 @@ if __name__ == "__main__":
 
     lango = Lango(whisper_model, allosaurus_model)
 
-    audio_file = "quickbrownfox"
-    audio_file = f"audio_files/{audio_file}.wav"
+    audio_file = "test_audio_files/quickbrownfox.wav"
+    # audio_file = f"audio_files/{audio_file}.wav"
 
-    res, word_phoneme_map = lango.get_results(audio_file)
+    # res, word_phoneme_map = lango.get_results(audio_file)
 
-    # phonemes = lango.audio_to_phonemes(audio_file)
-    # words = lango.timestamp_transcription(audio_file)
-    # res = lango.map_phonemes_to_words(words, phonemes)
+    phonemes = lango.audio_to_phonemes(audio_file)
+    words = lango.timestamp_transcription(audio_file)
+    res = lango.map_phonemes_to_words(words, phonemes)
 
-    # print(' '.join([w.text for w, ps in res]))
+    print(' '.join([w.text for w, ps in res]))
 
-    # print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+    print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
 
-    # for w, ps in res:
-    #     print(w)
+    for w, ps in res:
+        print(w)

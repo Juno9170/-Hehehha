@@ -3,11 +3,12 @@ import AudioRecorderWithVisualizer from './Voice'
 import { TooltipProvider } from './ui/tooltip'
 interface Props {
   onFinish: () => void; // This is a callback function that takes no arguments and returns nothing
+  titleString:string;
 }
-const VoiceProvider: React.FC<Props> = ({ onFinish }) => {
+const VoiceProvider: React.FC<Props> = ({ onFinish,titleString }) => {
   return (
     <TooltipProvider>
-        <AudioRecorderWithVisualizer onFinish = {onFinish} />
+        <AudioRecorderWithVisualizer onFinish = {onFinish} titleString={titleString} />
     </TooltipProvider>
   )
 }
