@@ -13,10 +13,12 @@ from io import BytesIO
 from openai import OpenAI
 import wave
 import subprocess
-from stt import Lango
 from pydub import AudioSegment
 from time import sleep
 import eng_to_ipa as ipa
+
+from utils import utils
+from stt import Lango
 
 
 load_dotenv()
@@ -88,16 +90,29 @@ def handle_audio(data):
         webm_audio.export(wav_io, format="wav")
         wav_bitstring = wav_io.getvalue()
 
-        output_file = 'testingNOW.wav'
-        with open(output_file, 'wb') as file:
-            file.write(wav_bitstring)
+        target = data['additionalString']
+
+        output_file = 'test_audio_files/' + f'{target}.wav'
+
+        print("target:", target)
+        # with open(output_file, 'wb') as file:
+        #     file.write(wav_bitstring)
+
         phonemes = lango.audio_to_phonemes(output_file)
+        print(phonemes)
         words = lango.timestamp_transcription(output_file)
+        print(words)
         res = lango.map_phonemes_to_words(words, phonemes)
 
         print(' '.join([w.text for w, ps in res]))
+        print(' '.join([ipa.convert(w.text) for w, _ in res]))
+        print(' '.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
 
-        print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+        diffs = [utils.levenshtein_operations(
+            ''.join([p.phoneme for p in ps]), ipa.convert(w.text)) for w, ps in res]
+
+        for d in diffs:
+            print(d)
 
         for w, ps in res:
             print(w)
