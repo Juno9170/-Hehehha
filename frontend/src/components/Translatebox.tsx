@@ -44,7 +44,7 @@ const Translatebox = () => {
     setIsEditing(true);
   };
 
-  const handleTranslationChange = (e) => {
+  const handleTranslationChange = (e : any) => {
     setTranslation(e.target.value);
   };
 
@@ -52,7 +52,7 @@ const Translatebox = () => {
     setIsEditing(false); // Switch to view mode once user leaves the input field
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e : any) => {
     if (e.key === "Enter") {
       setIsEditing(false); // Exit editing mode when Enter is pressed
     }
@@ -157,7 +157,7 @@ const Translatebox = () => {
         </AnimatePresence>
 
         <AnimatePresence>
-          {progress >= 2 && (
+          {progress === 2 && (
             <motion.div
               key="box"
               initial={{ opacity: 0, y: 50 }}
