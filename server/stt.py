@@ -19,9 +19,10 @@ openai_client = OpenAI(
 
 
 class Lango:
-    def __init__(self, whisper_model, allosaurus_model):
+    def __init__(self, whisper_model, allosaurus_model, tolerance=0.025):
         self.whisper_model = whisper_model
         self.allosaurus_model = allosaurus_model
+        self.tolerance = tolerance
 
     def recognize(self, audio_file):
         res = self.allosaurus_model.recognize(
@@ -96,7 +97,7 @@ class Lango:
             while (p < len(phonemes)) and (phonemes[p].start) <= w.end:
 
                 # if phoneme times are within word times, append to out
-                if (phonemes[p].start >= w.start) and (phonemes[p].end <= w.end):
+                if (phonemes[p].start >= w.start - self.tolerance) and (phonemes[p].end <= w.end):
                     mapped_phonemes.append(phonemes[p])
                 p += 1
 
@@ -104,13 +105,16 @@ class Lango:
 
         return out
 
+    def to_ipa(self, text):
+        return ipa.convert(text)
+
 
 if __name__ == "__main__":
 
     whisper_model = whisper.load_model("tiny", device="cpu")
     allosaurus_model = read_recognizer("eng2102")
 
-    lango = Lango(whisper_model, allosaurus_model)
+    lango = Lango(whisper_model, allosaurus_model, tolerance=0.1)
 
     audio_file = "quickbrownfox"
     audio_file = f"audio_files/{audio_file}.wav"
@@ -123,7 +127,7 @@ if __name__ == "__main__":
 
     print(' '.join([w.text for w, ps in res]))
 
-    print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+    print(' '.join([''.join([p.phoneme for p in ps]) for _, ps in res]))
 
     for w, ps in res:
-        print(w)
+        print(f"{w.text:10} | {''.join([p.phoneme for p in ps])}")
