@@ -1,9 +1,6 @@
-import json
 import whisper_timestamped as whisper
 import os
-# from groq import Groq
 from dotenv import load_dotenv
-from openai import OpenAI
 import eng_to_ipa as ipa
 from allosaurus.app import read_recognizer
 from pydub import AudioSegment
@@ -11,19 +8,12 @@ from pydub import AudioSegment
 from phoneme import Phoneme
 from word import Word
 
-load_dotenv()
-
-openai_client = OpenAI(
-    api_key=os.getenv("OPENAPI_API_KEY"),
-)
-
 
 class Lango:
-    def __init__(self, whisper_model, allosaurus_model, start_shift=0.025, end_shift=0.025):
+    def __init__(self, whisper_model, allosaurus_model, time_shift=0.0):
         self.whisper_model = whisper_model
         self.allosaurus_model = allosaurus_model
-        self.start_shift = start_shift
-        self.end_shift = end_shift
+        self.time_shift = time_shift
 
     def recognize(self, audio_file):
         res = self.allosaurus_model.recognize(
@@ -36,8 +26,13 @@ class Lango:
         audio = whisper.load_audio(filepath)
         result = whisper.transcribe(self.whisper_model, audio, language="en")
 
-        for w in result["segments"][0]["words"]:
+        for i, w in enumerate(result["segments"][0]["words"]):
             word = Word(w["text"], w["start"], w["end"], w["confidence"])
+            # shift the start time up by the time_shift except for the first word
+            word.start += self.time_shift  # if i > 0 else 0
+            # shift the end time down by the time_shift except for the last word
+            word.end += self.time_shift if i < len(
+                result["segments"][0]["words"]) - 1 else 0
             words.append(word)
 
         return words
@@ -99,7 +94,8 @@ class Lango:
 
                 # if phoneme times are within word times, append to out
                 # if the phoneme is on the boundary, assign it to the word that starts first
-                if ((phonemes[p].start >= w.start - self.start_shift) and (phonemes[p].end <= w.end - self.end_shift)):
+                # so really we just check if p starts before w ends
+                if (phonemes[p].start >= w.start):
                     mapped_phonemes.append(phonemes[p])
                 p += 1
 
@@ -116,10 +112,9 @@ if __name__ == "__main__":
     whisper_model = whisper.load_model("tiny", device="cpu")
     allosaurus_model = read_recognizer("eng2102")
 
-    lango = Lango(whisper_model, allosaurus_model,
-                  start_shift=0.1, end_shift=0.1)
+    lango = Lango(whisper_model, allosaurus_model, time_shift=0.0)
 
-    audio_file = "quickbrownfox"
+    audio_file = "quickbrownfoxSLOW"
     audio_file = f"audio_files/{audio_file}.wav"
 
     phonemes = lango.audio_to_phonemes(audio_file)
@@ -131,4 +126,5 @@ if __name__ == "__main__":
     # print(' '.join([''.join([p.phoneme for p in ps]) for _, ps in res]))
 
     for w, ps in res:
+        # print(f"{w} | {[p for p in ps]}")
         print(f"{w.text:10} | {''.join([p.phoneme for p in ps])}")
