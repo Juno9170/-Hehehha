@@ -1,22 +1,11 @@
-import json
 import whisper_timestamped as whisper
-import os
 # from groq import Groq
-from dotenv import load_dotenv
-from openai import OpenAI
 import eng_to_ipa as ipa
 from allosaurus.app import read_recognizer
 from pydub import AudioSegment
 
 from phoneme import Phoneme
 from word import Word
-
-load_dotenv()
-
-openai_client = OpenAI(
-    api_key=os.getenv("OPENAPI_API_KEY"),
-)
-
 
 class Lango:
     def __init__(self, whisper_model, allosaurus_model):
@@ -28,10 +17,10 @@ class Lango:
             audio_file, topk=5, timestamp=True)
         return res
 
-    def timestamp_transcription(self, filepath):
+    def timestamp_transcription(self, bytes):
         words = []
 
-        audio = whisper.load_audio(filepath)
+        audio = whisper.load_audio(bytes)
         result = whisper.transcribe(self.whisper_model, audio, language="en")
 
         for w in result["segments"][0]["words"]:
@@ -103,8 +92,8 @@ class Lango:
             out.append((w, mapped_phonemes))
 
         return out
-
-
+    
+    
 if __name__ == "__main__":
 
     whisper_model = whisper.load_model("tiny", device="cpu")
