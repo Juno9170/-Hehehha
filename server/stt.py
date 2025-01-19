@@ -4,13 +4,26 @@ import eng_to_ipa as ipa
 from allosaurus.app import read_recognizer
 from pydub import AudioSegment
 
-from phoneme import Phoneme
-from word import Word
+from server.objects.phoneme import Phoneme
+from server.objects.word import Word
 
 class Lango:
     def __init__(self, whisper_model, allosaurus_model):
         self.whisper_model = whisper_model
         self.allosaurus_model = allosaurus_model
+
+    def get_results(self, audio_file):
+        res = self.recognize(audio_file)
+        words = self.timestamp_transcription(audio_file)
+        phonemes = self.audio_to_phonemes(audio_file)
+        word_phoneme_map = self.map_phonemes_to_words(words, phonemes)
+
+        print(' '.join([w.text for w, ps in word_phoneme_map]))
+        print(''.join([''.join([p.phoneme for p in ps]) for w, ps in word_phoneme_map]))
+        for w, ps in res:
+            print(w)
+
+        return res, word_phoneme_map
 
     def recognize(self, audio_file):
         res = self.allosaurus_model.recognize(
@@ -104,15 +117,15 @@ if __name__ == "__main__":
     audio_file = "quickbrownfox"
     audio_file = f"audio_files/{audio_file}.wav"
 
-    # res = lango.audio_to_phonemes(audio_file)
+    res, word_phoneme_map = lango.get_results(audio_file)
 
-    phonemes = lango.audio_to_phonemes(audio_file)
-    words = lango.timestamp_transcription(audio_file)
-    res = lango.map_phonemes_to_words(words, phonemes)
+    # phonemes = lango.audio_to_phonemes(audio_file)
+    # words = lango.timestamp_transcription(audio_file)
+    # res = lango.map_phonemes_to_words(words, phonemes)
 
-    print(' '.join([w.text for w, ps in res]))
+    # print(' '.join([w.text for w, ps in res]))
 
-    print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
+    # print(''.join([''.join([p.phoneme for p in ps]) for w, ps in res]))
 
-    for w, ps in res:
-        print(w)
+    # for w, ps in res:
+    #     print(w)
